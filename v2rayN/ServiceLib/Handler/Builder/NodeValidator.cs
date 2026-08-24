@@ -115,18 +115,35 @@ public class NodeValidator
 
         if (item.GetNetwork() is nameof(ETransport.ws)
             && item.EchConfigList.IsNullOrEmpty()
-            && item.GetAlpn()?.FirstOrDefault() == "h3")
+            && item.GetAlpn()?.FirstOrDefault() is "h3" or "h2")
         {
             v.Warning(
-                "WebSocket but ALPN is set to h3, the core may ignore the ALPN setting or cause unexpected issues.");
+                $"WebSocket but ALPN is set to {item.Alpn}, the core may ignore the ALPN setting or cause unexpected issues.");
         }
 
         // TLS & Security
         if (item.StreamSecurity == Global.StreamSecurity)
         {
+            var isCertProvided = !item.Cert.IsNullOrEmpty();
             if (!item.Cert.IsNullOrEmpty() && CertPemManager.ParsePemChain(item.Cert).Count == 0)
             {
                 v.Error(string.Format(ResUI.MsgInvalidProperty, ResUI.TbFullCertTips));
+                isCertProvided = false;
+            }
+
+            if ((coreType == ECoreType.Xray
+                && item.GetAllowInsecure()
+                && !isCertProvided
+                && item.CertSha.IsNullOrEmpty())
+                || (coreType == ECoreType.sing_box
+                    && item.GetAllowInsecure()
+                    && !isCertProvided))
+            {
+                if (coreType == ECoreType.Xray)
+                {
+                    v.Warning(ResUI.MsgAllowInsecureDeprecated);
+                }
+                v.Warning(ResUI.MsgInsecureConfiguration);
             }
         }
 

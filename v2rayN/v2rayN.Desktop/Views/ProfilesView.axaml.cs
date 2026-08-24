@@ -8,9 +8,6 @@ public partial class ProfilesView : ReactiveUserControl<ProfilesViewModel>
 {
     private static Config _config;
     private static readonly string _tag = "ProfilesView";
-    private Point _pressedPoint;
-    private PointerPressedEventArgs? _pressedEvent;
-    private ProfileItemModel? _pressedItem;
     private bool _dragStarted;
 
     public ProfilesView()
@@ -73,6 +70,7 @@ public partial class ProfilesView : ReactiveUserControl<ProfilesViewModel>
             this.BindCommand(ViewModel, vm => vm.MoveBottomCmd, v => v.menuMoveBottom).DisposeWith(disposables);
 
             //servers ping
+            this.BindCommand(ViewModel, vm => vm.MixedTestServerCmd, v => v.menuMixedTestServer).DisposeWith(disposables);
             this.BindCommand(ViewModel, vm => vm.TcpingServerCmd, v => v.menuTcpingServer).DisposeWith(disposables);
             this.BindCommand(ViewModel, vm => vm.RealPingServerCmd, v => v.menuRealPingServer).DisposeWith(disposables);
             this.BindCommand(ViewModel, vm => vm.UdpTestServerCmd, v => v.menuUdpTestServer).DisposeWith(disposables);
@@ -294,6 +292,9 @@ public partial class ProfilesView : ReactiveUserControl<ProfilesViewModel>
                     ViewModel?.ServerSpeedtest(ESpeedActionType.Speedtest);
                     break;
 
+                case Key.E:
+                    ViewModel?.ServerSpeedtest(ESpeedActionType.Mixedtest);
+                    break;
             }
         }
         else
@@ -456,54 +457,77 @@ public partial class ProfilesView : ReactiveUserControl<ProfilesViewModel>
 
     #region Drag and Drop
 
-    private static readonly DataFormat<object> LstProfilesRowFormat =
-        DataFormat.CreateInProcessFormat<object>("LstProfilesRow");
+    private static readonly DataFormat<ProfileItemModel> LstProfilesRowFormat =
+        DataFormat.CreateInProcessFormat<ProfileItemModel>("LstProfilesRow");
+    private (Point, PointerPressedEventArgs)? _dragStartPoint;
 
     private void LstProfiles_PointerPressed(object? sender, PointerPressedEventArgs e)
     {
-        if (e.GetCurrentPoint(lstProfiles).Properties.IsLeftButtonPressed
-            && e.Source is Visual source
-            && source.FindAncestorOfType<DataGridRow>(true) is { DataContext: ProfileItemModel item })
+        var properties = e.GetCurrentPoint(this).Properties;
+        if (properties.IsLeftButtonPressed)
         {
-            _pressedPoint = e.GetPosition(lstProfiles);
-            _pressedEvent = e;
-            _pressedItem = item;
-            _dragStarted = false;
+            _dragStartPoint = (e.GetPosition(this), e);
         }
     }
 
     private async void LstProfiles_PointerMoved(object? sender, PointerEventArgs e)
     {
-        if (_pressedItem == null || _dragStarted || !e.GetCurrentPoint(lstProfiles).Properties.IsLeftButtonPressed)
-        {
-            return;
-        }
-
-        var point = e.GetPosition(lstProfiles);
-        if (Math.Abs(point.X - _pressedPoint.X) < 4 && Math.Abs(point.Y - _pressedPoint.Y) < 4)
-        {
-            return;
-        }
-
-        _dragStarted = true;
         try
         {
+            if (_dragStartPoint == null)
+            {
+                return;
+            }
+
+            var properties = e.GetCurrentPoint(this).Properties;
+            if (!properties.IsLeftButtonPressed)
+            {
+                _dragStartPoint = null;
+                return;
+            }
+
+            var currentPoint = e.GetPosition(this);
+            var startPoint = _dragStartPoint.Value.Item1;
+            var delta = startPoint - currentPoint;
+
+            var threshold = new Vector(4, 4);
+
+            if (!(Math.Abs(delta.X) >= threshold.X) && !(Math.Abs(delta.Y) >= threshold.Y))
+            {
+                return;
+            }
+            var dragStartEventArgs = _dragStartPoint.Value.Item2;
+            _dragStartPoint = null;
+
+            if (e.Source is not Visual visualSource)
+            {
+                return;
+            }
+            var row = visualSource.FindAncestorOfType<DataGridRow>(true);
+            if (row?.DataContext == null)
+            {
+                return;
+            }
+
+            e.Handled = true;
+            _dragStarted = true;
+
             var dragData = new DataTransfer();
-            dragData.Add(DataTransferItem.Create(LstProfilesRowFormat, _pressedItem));
-            await DragDrop.DoDragDropAsync(_pressedEvent!, dragData, DragDropEffects.Move);
+            var item = DataTransferItem.Create(LstProfilesRowFormat, row.DataContext as ProfileItemModel);
+
+            dragData.Add(item);
+
+            await DragDrop.DoDragDropAsync(dragStartEventArgs, dragData, DragDropEffects.Move);
         }
         catch
         {
-            _dragStarted = false;
+            // Ignore
         }
-        _pressedEvent = null;
-        _pressedItem = null;
     }
 
     private void LstProfiles_PointerReleased(object? sender, PointerReleasedEventArgs e)
     {
-        _pressedEvent = null;
-        _pressedItem = null;
+        _dragStartPoint = null;
     }
 
     private void LstProfiles_DragOver(object? sender, DragEventArgs e)
