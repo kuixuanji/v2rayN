@@ -131,13 +131,10 @@ public class NodeValidator
                 isCertProvided = false;
             }
 
-            if ((coreType == ECoreType.Xray
+            if (item.ConfigType != EConfigType.Anytls
+                && item.CertSha.IsNullOrEmpty()
                 && item.GetAllowInsecure()
-                && !isCertProvided
-                && item.CertSha.IsNullOrEmpty())
-                || (coreType == ECoreType.sing_box
-                    && item.GetAllowInsecure()
-                    && !isCertProvided))
+                && !isCertProvided)
             {
                 if (coreType == ECoreType.Xray)
                 {
