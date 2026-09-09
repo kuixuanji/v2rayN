@@ -132,9 +132,11 @@ public static class ConfigHandler
         {
             config.SpeedTestItem.SpeedTestUrl = Global.SpeedTestUrls.First();
         }
-        if (config.SpeedTestItem.SpeedPingTestUrl.IsNullOrEmpty())
+        var preferredPingUrl = Global.SpeedPingTestUrls.First();
+        if (config.ConstItem.SpeedPingTestUrlDefault != preferredPingUrl)
         {
-            config.SpeedTestItem.SpeedPingTestUrl = Global.SpeedPingTestUrls.First();
+            config.SpeedTestItem.SpeedPingTestUrl = preferredPingUrl;
+            config.ConstItem.SpeedPingTestUrlDefault = preferredPingUrl;
         }
         if (config.SpeedTestItem.MixedConcurrencyCount < 1)
         {

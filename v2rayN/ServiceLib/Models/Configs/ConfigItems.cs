@@ -113,6 +113,7 @@ public class ConstItem
     public string? GeoSourceUrl { get; set; }
     public string? SrsSourceUrl { get; set; }
     public string? RouteRulesTemplateSourceUrl { get; set; }
+    public string? SpeedPingTestUrlDefault { get; set; }
 }
 
 [Serializable]
