@@ -13,6 +13,8 @@ public class DownloadService
 
     public string? AcceptHeader { get; init; }
 
+    public IReadOnlyDictionary<string, string>? RequestHeaders { get; init; }
+
     private static readonly string _tag = "DownloadService";
 
     /// <summary>
@@ -212,6 +214,7 @@ public class DownloadService
             {
                 Proxy = webProxy,
                 UseProxy = webProxy != null,
+                AutomaticDecompression = DecompressionMethods.All,
                 ConnectTimeout = TimeSpan.FromSeconds(connectTimeout)
             };
             var certificateChainPolicy = CertPemManager.Instance.BuildCertificateChainPolicy();
@@ -221,7 +224,7 @@ public class DownloadService
                 handler.SslOptions.RemoteCertificateValidationCallback = null;
             }
 
-            using var client = new HttpClient(handler)
+            using var client = new HttpClient(HttpRequestHeadersHelper.CreateHandler(handler, RequestHeaders))
             {
                 Timeout = Timeout.InfiniteTimeSpan
             };
@@ -274,7 +277,7 @@ public class DownloadService
             {
                 userAgent = Utils.GetVersion(false);
             }
-            var result = await DownloaderHelper.Instance.DownloadStringAsync(webProxy, url, userAgent, timeout);
+            var result = await DownloaderHelper.Instance.DownloadStringAsync(webProxy, url, userAgent, timeout, RequestHeaders, AcceptHeader);
             return result;
         }
         catch (Exception ex)

@@ -95,6 +95,12 @@ public partial class SubEditViewModel : MyReactiveObject, ICloseable
         }
         SelectedSource.Url = url;
 
+        if (!HttpRequestHeadersHelper.TryParse(SelectedSource.RequestHeaders, out _))
+        {
+            NoticeManager.Instance.Enqueue(ResUI.SubRequestHeadersInvalid);
+            return;
+        }
+
         SelectedSource.CustomCoreType = Enum.TryParse<ECoreType>(CustomCoreType, out var coreType) ? coreType : null;
         SelectedSource.PrevProfile = PrevProfile;
         SelectedSource.NextProfile = NextProfile;
