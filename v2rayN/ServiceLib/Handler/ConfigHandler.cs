@@ -926,6 +926,7 @@ public static class ConfigHandler
             WgInterfaceAddress = profileItem.GetProtocolExtra().WgInterfaceAddress?.TrimEx(),
             WgReserved = wgReserved,
             WgMtu = profileItem.GetProtocolExtra().WgMtu is null or <= 0 ? Global.TunMtus.First() : profileItem.GetProtocolExtra().WgMtu,
+            WgDns = profileItem.GetProtocolExtra().WgDns?.TrimEx(),
         });
 
         if (profileItem.Password.IsNullOrEmpty())
@@ -1757,15 +1758,13 @@ public static class ConfigHandler
         {
             lstProfiles = SingboxFmt.ResolveToCustomOutbound(strData, subRemarks);
         }
-        if (lstProfiles.Count == 0)
+        if (lstProfiles.Count > 0)
         {
-            return -1;
-        }
-
-        var count = await AddBatchCustomServers(config, lstProfiles, subid, isSub);
-        if (count > 0)
-        {
-            return count;
+            var count = await AddBatchCustomServers(config, lstProfiles, subid, isSub);
+            if (count > 0)
+            {
+                return count;
+            }
         }
 
         if (HtmlPageFmt.IsHtmlPage(strData))
@@ -1805,15 +1804,13 @@ public static class ConfigHandler
             _ => null,
         };
 
-        if ((lstProfiles?.Count ?? 0) == 0)
+        if (lstProfiles?.Count > 0)
         {
-            return -1;
-        }
-
-        var count = await AddBatchCustomServers(config, lstProfiles, subid, isSub);
-        if (count > 0)
-        {
-            return count;
+            var count = await AddBatchCustomServers(config, lstProfiles, subid, isSub);
+            if (count > 0)
+            {
+                return count;
+            }
         }
 
         return await SaveCustomRawFileServer(config, strData, subid, isSub, subItem, customCoreType);
@@ -2626,7 +2623,7 @@ public static class ConfigHandler
             items = await AppManager.Instance.RoutingItems();
         }
 
-        if (!blImportAdvancedRules && items.Count(u => u.Remarks.StartsWith(ver)) > 0)
+        if (!blImportAdvancedRules && items.Count() > 0) // items.Count(u => u.Remarks.StartsWith(ver)) > 0)
         {
             //migrate
             //TODO Temporary code to be removed later

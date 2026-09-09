@@ -589,6 +589,53 @@ public class CoreConfigV2rayServiceTests
     }
 
     [Test]
+    [Arguments(true)]
+    [Arguments(false)]
+    public async Task GenerateClientConfigContent_Tun_ShouldSkipIPv6RouteWithoutGlobalIPv6(bool enableIPv6Address)
+    {
+        // A host without a global IPv6 address has no IPv6 traffic that could bypass the tunnel,
+        // while ::/0 would pull IPv6 attempts into a tunnel they cannot leave.
+        var config = CoreConfigTestFactory.CreateConfigWithTun(ECoreType.Xray, enableIPv6Address);
+        CoreConfigTestFactory.BindAppManagerConfig(config);
+
+        var node = CoreConfigTestFactory.CreateVmessNode(ECoreType.Xray, "n-main", "main");
+        var context = CoreConfigTestFactory.CreateContext(config, node, ECoreType.Xray, hasGlobalIPv6Address: false);
+
+        var result = new CoreConfigV2rayService(context).GenerateClientConfigContent();
+
+        await result.Success.Should().BeTrue();
+        var cfg = JsonUtils.Deserialize<V2rayConfig>(result.Data!.ToString())!;
+        var tunInbound = cfg.inbounds.FirstOrDefault(i => i.protocol == "tun");
+
+        await tunInbound.Should().NotBeNull();
+        await tunInbound!.settings.autoSystemRoutingTable.Should().Contain("0.0.0.0/0");
+        var ipv6Routes = tunInbound.settings.autoSystemRoutingTable!.Where(x => x.Contains(':')).ToList();
+        await ipv6Routes.Should().BeEmpty();
+    }
+
+    [Test]
+    public async Task GenerateClientConfigContent_TunRouteExcludeAddress_ShouldSkipIPv6RangesWithoutGlobalIPv6()
+    {
+        var config = CoreConfigTestFactory.CreateConfigWithTunRouteExcludeAddress(ECoreType.Xray);
+        config.TunModeItem.EnableIPv6Address = false;
+        CoreConfigTestFactory.BindAppManagerConfig(config);
+
+        var node = CoreConfigTestFactory.CreateVmessNode(ECoreType.Xray, "n-main", "main");
+        var context = CoreConfigTestFactory.CreateContext(config, node, ECoreType.Xray, hasGlobalIPv6Address: false);
+
+        var result = new CoreConfigV2rayService(context).GenerateClientConfigContent();
+
+        await result.Success.Should().BeTrue();
+        var cfg = JsonUtils.Deserialize<V2rayConfig>(result.Data!.ToString())!;
+        var tunInbound = cfg.inbounds.FirstOrDefault(i => i.protocol == "tun");
+
+        await tunInbound.Should().NotBeNull();
+        await tunInbound!.settings.autoSystemRoutingTable.Should().NotBeEmpty();
+        var ipv6Routes = tunInbound.settings.autoSystemRoutingTable!.Where(x => x.Contains(':')).ToList();
+        await ipv6Routes.Should().BeEmpty();
+    }
+
+    [Test]
     public async Task GenerateClientConfigContent_TunRouteExcludeAddress_ShouldIncludeIPv6Ranges()
     {
         var config = CoreConfigTestFactory.CreateConfigWithTunRouteExcludeAddress(ECoreType.Xray);
@@ -670,8 +717,8 @@ public class CoreConfigV2rayServiceTests
         await proxyOutbound.settings.servers.Should().NotBeNull();
     }
 
-    [Fact]
-    public void GenerateClientConfigContent_Hysteria2_ShouldEmitPinnedPeerCertSha256()
+    [Test]
+    public async Task GenerateClientConfigContent_Hysteria2_ShouldEmitPinnedPeerCertSha256()
     {
         const string pin = "8ce2b8084f7762cdd8aa22c740a1e0b85f4f1082cd25410b99015ca180dce2d7";
         var config = CoreConfigTestFactory.CreateConfig(ECoreType.Xray);
@@ -699,19 +746,19 @@ public class CoreConfigV2rayServiceTests
 
         var result = new CoreConfigV2rayService(context).GenerateClientConfigContent();
 
-        result.Success.Should().BeTrue($"ret msg: {result.Msg}");
+        await result.Success.Should().BeTrue().Because($"ret msg: {result.Msg}");
         var json = result.Data!.ToString();
-        json.Should().Contain("pinnedPeerCertSha256");
-        json.Should().Contain(pin);
+        await json.Should().Contain("pinnedPeerCertSha256");
+        await json.Should().Contain(pin);
 
         var cfg = JsonUtils.Deserialize<V2rayConfig>(json)!;
         var outbound = cfg.outbounds.First(o => o.tag == Global.ProxyTag);
-        outbound.protocol.Should().Be("hysteria");
-        outbound.streamSettings.security.Should().Be(Global.StreamSecurity);
-        outbound.streamSettings.tlsSettings.Should().NotBeNull();
-        outbound.streamSettings.tlsSettings!.pinnedPeerCertSha256.Should().Be(pin);
-        outbound.streamSettings.tlsSettings.serverName.Should().Be("www.bing.com");
-        outbound.streamSettings.tlsSettings.allowInsecure.Should().BeNull();
-        json.Should().NotContain("allowInsecure");
+        await outbound.protocol.Should().BeEqualTo("hysteria");
+        await outbound.streamSettings.security.Should().BeEqualTo(Global.StreamSecurity);
+        await outbound.streamSettings.tlsSettings.Should().NotBeNull();
+        await outbound.streamSettings.tlsSettings!.pinnedPeerCertSha256.Should().BeEqualTo(pin);
+        await outbound.streamSettings.tlsSettings.serverName.Should().BeEqualTo("www.bing.com");
+        await outbound.streamSettings.tlsSettings.allowInsecure.Should().BeNull();
+        await json.Should().NotContain("allowInsecure");
     }
 }

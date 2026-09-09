@@ -209,7 +209,6 @@ public class HysteriaItem
 [Serializable]
 public class ClashUIItem
 {
-    public ERuleMode RuleMode { get; set; }
     public bool EnableIPv6 { get; set; }
     public bool EnableMixinContent { get; set; }
     public int ProxiesSorting { get; set; }
@@ -244,6 +243,7 @@ public class WebDavItem
 public class CheckUpdateItem
 {
     public bool CheckPreReleaseUpdate { get; set; }
+    public bool UpdateViaProxy { get; set; } = true;
     public List<string>? SelectedCoreTypes { get; set; }
 }
 

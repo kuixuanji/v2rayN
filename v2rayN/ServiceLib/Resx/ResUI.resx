@@ -705,6 +705,9 @@
   <data name="TbSettingsEnableCheckPreReleaseUpdate" xml:space="preserve">
     <value>Check for pre-release</value>
   </data>
+  <data name="TbSettingsEnableUpdateViaProxy" xml:space="preserve">
+    <value>Update via proxy</value>
+  </data>
   <data name="TbSettingsException" xml:space="preserve">
     <value>Exception</value>
   </data>
@@ -1035,6 +1038,15 @@
   <data name="TbSettingsMux4SboxProtocol" xml:space="preserve">
     <value>sing-box Mux Protocol</value>
   </data>
+  <data name="TbSettingsMux4RayConcurrency" xml:space="preserve">
+    <value>Xray Mux concurrency</value>
+  </data>
+  <data name="TbSettingsMux4RayXudpConcurrency" xml:space="preserve">
+    <value>Xray Mux XUDP concurrency</value>
+  </data>
+  <data name="TbSettingsMux4RayXudpProxyUDP443" xml:space="preserve">
+    <value>Xray Mux XUDP proxy UDP443</value>
+  </data>
   <data name="TbRoutingRuleProcess" xml:space="preserve">
     <value>Process (Linux/Windows)</value>
   </data>
@@ -1236,7 +1248,7 @@
   <data name="menuModeRule" xml:space="preserve">
     <value>Rule</value>
   </data>
-  <data name="menuProxiesDelaytest" xml:space="preserve">
+  <data name="menuDelaytest" xml:space="preserve">
     <value>Latency Test</value>
   </data>
   <data name="menuProxiesDelaytestPart" xml:space="preserve">
@@ -1914,5 +1926,11 @@ The "Get Certificate" action may fail if a self-signed certificate is used or if
   </data>
   <data name="TbBlockAAAAQueriesTips" xml:space="preserve">
     <value>Block IPv6 queries when enabled</value>
+  </data>
+  <data name="TbDNS" xml:space="preserve">
+    <value>DNS</value>
+  </data>
+  <data name="TbSettingsMux4Ray" xml:space="preserve">
+    <value>Xray Mux setting</value>
   </data>
 </root>

@@ -1006,6 +1006,15 @@ namespace ServiceLib.Resx {
         }
         
         /// <summary>
+        ///   查找类似 Latency Test 的本地化字符串。
+        /// </summary>
+        public static string menuDelaytest {
+            get {
+                return ResourceManager.GetString("menuDelaytest", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   查找类似 DNS Settings 的本地化字符串。
         /// </summary>
         public static string menuDNSSetting {
@@ -1416,15 +1425,6 @@ namespace ServiceLib.Resx {
         public static string menuPromotion {
             get {
                 return ResourceManager.GetString("menuPromotion", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   查找类似 Latency Test 的本地化字符串。
-        /// </summary>
-        public static string menuProxiesDelaytest {
-            get {
-                return ResourceManager.GetString("menuProxiesDelaytest", resourceCulture);
             }
         }
         
@@ -3079,6 +3079,15 @@ namespace ServiceLib.Resx {
         }
         
         /// <summary>
+        ///   查找类似 DNS 的本地化字符串。
+        /// </summary>
+        public static string TbDNS {
+            get {
+                return ResourceManager.GetString("TbDNS", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   查找类似 DNS Hosts: (&quot;domain1 ip1 ip2&quot; per line) 的本地化字符串。
         /// </summary>
         public static string TbDNSHostsConfig {
@@ -4292,6 +4301,15 @@ namespace ServiceLib.Resx {
                 return ResourceManager.GetString("TbSettingsEnableCheckPreReleaseUpdate", resourceCulture);
             }
         }
+
+        /// <summary>
+        ///   查找类似 Update via proxy 的本地化字符串。
+        /// </summary>
+        public static string TbSettingsEnableUpdateViaProxy {
+            get {
+                return ResourceManager.GetString("TbSettingsEnableUpdateViaProxy", resourceCulture);
+            }
+        }
         
         /// <summary>
         ///   查找类似 Enable sorting Configurations by drag-n-drop (requires restart) 的本地化字符串。
@@ -4587,6 +4605,42 @@ namespace ServiceLib.Resx {
         public static string TbSettingsMixedConcurrencyCount {
             get {
                 return ResourceManager.GetString("TbSettingsMixedConcurrencyCount", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   查找类似 Xray Mux setting 的本地化字符串。
+        /// </summary>
+        public static string TbSettingsMux4Ray {
+            get {
+                return ResourceManager.GetString("TbSettingsMux4Ray", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   查找类似 Xray Mux concurrency 的本地化字符串。
+        /// </summary>
+        public static string TbSettingsMux4RayConcurrency {
+            get {
+                return ResourceManager.GetString("TbSettingsMux4RayConcurrency", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   查找类似 Xray Mux XUDP concurrency 的本地化字符串。
+        /// </summary>
+        public static string TbSettingsMux4RayXudpConcurrency {
+            get {
+                return ResourceManager.GetString("TbSettingsMux4RayXudpConcurrency", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   查找类似 Xray Mux XUDP proxy UDP443 的本地化字符串。
+        /// </summary>
+        public static string TbSettingsMux4RayXudpProxyUDP443 {
+            get {
+                return ResourceManager.GetString("TbSettingsMux4RayXudpProxyUDP443", resourceCulture);
             }
         }
         
