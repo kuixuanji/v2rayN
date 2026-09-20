@@ -277,7 +277,7 @@ public class CoreManager
         }
     }
 
-    private static async Task WaitForProxyPort(CoreConfigContext? preContext, int timeoutMs = 5000)
+    private static async Task WaitForProxyPort(CoreConfigContext? preContext)
     {
         if (preContext is null)
         {
@@ -288,7 +288,7 @@ public class CoreManager
             return;
         }
 
-        using var rootCts = new CancellationTokenSource(TimeSpan.FromMilliseconds(timeoutMs));
+        using var rootCts = new CancellationTokenSource(Global.LocalFetch);
         var rootToken = rootCts.Token;
 
         var port = preContext.Node.Port;

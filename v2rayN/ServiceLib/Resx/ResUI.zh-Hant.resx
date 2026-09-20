@@ -1125,6 +1125,9 @@
   <data name="SpeedtestingStop" xml:space="preserve">
     <value>測試終止中...</value>
   </data>
+  <data name="SpeedtestingBatchWarning" xml:space="preserve">
+    <value>批量測速會消耗大量流量，單次可能消耗數 GB，是否繼續？</value>
+  </data>
   <data name="TransportRequestHostTip5" xml:space="preserve">
     <value>gRPC Authority</value>
   </data>
