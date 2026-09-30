@@ -12,6 +12,7 @@
     Width="1200"
     Height="800"
     MinWidth="600"
+    MinHeight="500"
     x:DataType="vms:MainWindowViewModel"
     Design.DataContext="{x:Static dd:DesignData.MainWindow}"
     Icon="/Assets/NotifyIcon1.ico"

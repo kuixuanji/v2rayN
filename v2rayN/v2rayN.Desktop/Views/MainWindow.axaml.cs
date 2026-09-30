@@ -18,6 +18,8 @@ public partial class MainWindow : WindowBase<MainWindowViewModel>
     private bool _logPanelVisible;
     private double _defaultTopHeight = 1;
     private double _defaultBottomHeight = 1;
+    private const double MinLogPanelWeightRatio = 0.35;
+    private const double MinWindowHeightForLog = 560;
 
     public MainWindow()
     {
@@ -402,6 +404,10 @@ public partial class MainWindow : WindowBase<MainWindowViewModel>
         {
             ViewModel.TabMainSelectedIndex = _config.UiItem.MainGirdOrientation == EGirdOrientation.Tab ? 1 : 0;
         }
+        if (visible)
+        {
+            EnsureReadableLogLayout();
+        }
         if (_config.UiItem.MainGirdOrientation != EGirdOrientation.Vertical)
         {
             return;
@@ -410,6 +416,24 @@ public partial class MainWindow : WindowBase<MainWindowViewModel>
         gridMain1.RowDefinitions[0].Height = new GridLength(visible ? _defaultTopHeight : 1, GridUnitType.Star);
         gridMain1.RowDefinitions[1].Height = new GridLength(visible ? 10 : 0);
         gridMain1.RowDefinitions[2].Height = new GridLength(visible ? _defaultBottomHeight : 0, GridUnitType.Star);
+    }
+
+    private void EnsureReadableLogLayout()
+    {
+        if (Height < MinWindowHeightForLog)
+        {
+            var screen = Screens.ScreenFromWindow(this) ?? Screens.Primary;
+            var scaling = screen?.Scaling > 0 ? screen.Scaling : 1.0;
+            var maxH = screen is null ? MinWindowHeightForLog : screen.WorkingArea.Height / scaling;
+            Height = Math.Min(MinWindowHeightForLog, maxH);
+        }
+
+        var top = Math.Max(_defaultTopHeight, 1);
+        var bottom = Math.Max(_defaultBottomHeight, 1);
+        if (bottom / (top + bottom) < MinLogPanelWeightRatio)
+        {
+            _defaultBottomHeight = top * MinLogPanelWeightRatio / (1 - MinLogPanelWeightRatio);
+        }
     }
 
     private void StorageUI()
