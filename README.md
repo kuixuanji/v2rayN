@@ -1,13 +1,15 @@
-# v2rayN · fqfqgo fork
+# v2rayN · kui fork
 
-基于 [2dust/v2rayN](https://github.com/2dust/v2rayN) 的个人维护版本，支持 Windows、Linux 和 macOS，以及 [Xray](https://github.com/XTLS/Xray-core)、[sing-box](https://github.com/SagerNet/sing-box) 等核心。
+基于 [fqfqgo/v2rayN](https://github.com/fqfqgo/v2rayN)和[aleksandr-miheichev/v2rayN-oldos](https://github.com/aleksandr-miheichev/v2rayN-oldos) 的个人维护版本。
 
-[![Release](https://img.shields.io/github/v/release/fqfqgo/v2rayN?logo=github&label=Release)](https://github.com/fqfqgo/v2rayN/releases)
+从 7.23.2 开始，上游发布的版本不再能在 Ubuntu 22.04、Debian 12 和 RHEL 9 上安装。原因有两个且相互独立：原生 SQLite 库开始要求 GLIBC_2.38 和相对重定位 ABI 标签，而软件包元数据开始要求 glibc >= 2.39 。上游为了继续支持较旧的系统。这个分支恢复了两者：它使用基于 GLIBC_2.34 基线的 SQLite 构建，并声明了这些发行版能够满足的依赖下限。
+
+支持 Ubuntu 22.04、Debian 12 和 Rocky Linux 9，但是只会在 Ubuntu 22.04 下进行验证，仅会发布 Linux deb 包。
+
+<!-- [![Release](https://img.shilds.io/github/v/release/fqfqgo/v2rayN?logo=github&label=Release)](https://github.com/fqfqgo/v2rayN/releases)
 [![Downloads](https://img.shields.io/github/downloads/fqfqgo/v2rayN/latest/total?logo=github&label=Downloads)](https://github.com/fqfqgo/v2rayN/releases)
-[![GPG Signed](https://img.shields.io/badge/GPG-signed-4B32C3?logo=gnuprivacyguard)](https://github.com/fqfqgo/v2rayN/releases)
+[![GPG Signed](https://img.shields.io/badge/GPG-signed-4B32C3?logo=gnuprivacyguard)](https://github.com/fqfqgo/v2rayN/releases) -->
 
-> [!IMPORTANT]
-> 当前维护基线固定为 **7.24.8**。这是紧急安全更新基线，请勿从本仓库的旧版构建降级；下载后应同时校验对应的 GPG 签名。
 
 ## 下载
 
@@ -16,8 +18,6 @@
 https://github.com/fqfqgo/v2rayN/releases
 
 每个发布资产都应同时提供同名 `.sig` 文件，发布页还应包含 `v2rayN-public-key.asc`。不要只校验压缩包能否解压，也不要信任第三方镜像重新打包的文件。
-
-Windows 用户若不方便解压 zip，可下载同版本的 `*-Setup.exe`：它会解压到当前用户目录 `%LocalAppData%\Programs\v2rayN`，创建桌面快捷方式，并登记当前用户卸载信息；不写入系统目录。
 
 ## GPG 与资产校验
 
